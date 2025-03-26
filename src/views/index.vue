@@ -40,17 +40,10 @@ export default {
             }
             try {
                 const table = await bitable.base.getTableById(tableId);
-                await table.addRecord({
-                    fields: {
-                        '文本': Number((Math.random() * 10000).toFixed(2)), // 随机生成 0-10000 的金额，保留两位小数
-                        '单选': Math.floor(Math.random() * 10) + 1, // 随机生成 1-10 的频度
-                        '日期': new Date().toISOString(), // 当前日期，ISO 格式
-                        '附件': '' // 附件字段留空（如果需要上传文件，可以后续扩展）
-                    }
-                });
+                table.addRecord(generateFakeData());
                 ElMessage.success('成功添加记录');
             } catch (error) {
-                ElMessage.error('添加记录失败');
+                ElMessage.error('添加记录失败',err);
                 console.error(error);
             }
         };
