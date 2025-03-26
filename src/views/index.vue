@@ -9,6 +9,17 @@ import {
     ElOption,
 } from 'element-plus';
 
+// 假数据生成函数
+const generateFakeData = () => ({
+    fields: {
+        '名称': `测试记录${Math.floor(Math.random() * 1000)}`,
+        '日期': new Date().toISOString(),
+        '数量': Math.floor(Math.random() * 100),
+        '价格': Number((Math.random() * 1000).toFixed(2)),
+        '状态': ['进行中', '已完成', '待处理'][Math.floor(Math.random() * 3)]
+    }
+});
+
 export default {
     components: {
         ElButton,
@@ -23,9 +34,17 @@ export default {
 
         const addRecord = async () => {
             const tableId = formData.value.table;
-            if (tableId) {
+            if (!tableId) {
+                ElMessage.warning('请先选择数据表');
+                return;
+            }
+            try {
                 const table = await bitable.base.getTableById(tableId);
-                table.addRecord({ fields: {} });
+                await table.addRecord(generateFakeData());
+                ElMessage.success('成功添加记录');
+            } catch (error) {
+                ElMessage.error('添加记录失败');
+                console.error(error);
             }
         };
 
@@ -46,28 +65,6 @@ export default {
 
 <template>
     <el-form ref="form" class="form" :model="formData" label-position="top">
-        <el-form-item label="开发指南">
-            <a href="https://bytedance.feishu.cn/docx/HazFdSHH9ofRGKx8424cwzLlnZc" target="_blank"
-                rel="noopener noreferrer">
-                多维表格插件开发指南
-            </a>
-            、
-            <a href="https://lark-technologies.larksuite.com/docx/HvCbdSzXNowzMmxWgXsuB2Ngs7d" target="_blank"
-                rel="noopener noreferrer">
-                Base Extensions Guide
-            </a>
-        </el-form-item>
-        <el-form-item label="API">
-            <a href="https://bytedance.feishu.cn/docx/HjCEd1sPzoVnxIxF3LrcKnepnUf" target="_blank"
-                rel="noopener noreferrer">
-                多维表格插件API
-            </a>
-            、
-            <a href="https://lark-technologies.larksuite.com/docx/Y6IcdywRXoTYSOxKwWvuLK09sFe" target="_blank"
-                rel="noopener noreferrer">
-                Base Extensions Front-end API
-            </a>
-        </el-form-item>
         <el-form-item label="选择数据表" size="large">
             <el-select v-model="formData.table" placeholder="请选择数据表" style="width: 100%">
                 <el-option v-for="meta in tableMetaList" :key="meta.id" :label="meta.name" :value="meta.id" />
