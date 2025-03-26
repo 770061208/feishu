@@ -12,11 +12,10 @@ import {
 // 假数据生成函数
 const generateFakeData = () => ({
     fields: {
-        '名称': `测试记录${Math.floor(Math.random() * 1000)}`,
-        '日期': new Date().toISOString(),
-        '数量': Math.floor(Math.random() * 100),
-        '价格': Number((Math.random() * 1000).toFixed(2)),
-        '状态': ['进行中', '已完成', '待处理'][Math.floor(Math.random() * 3)]
+        '文本': Number((Math.random() * 10000).toFixed(2)), // 随机生成 0-10000 的金额，保留两位小数
+        '频度': Math.floor(Math.random() * 10) + 1, // 随机生成 1-10 的频度
+        '日期': new Date().toISOString(), // 当前日期，ISO 格式
+        '附件': '' // 附件字段留空（如果需要上传文件，可以后续扩展）
     }
 });
 
