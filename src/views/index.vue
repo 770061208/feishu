@@ -1,5 +1,5 @@
 <script>
-import { bitable } from '@lark-base-open/js-sdk';
+import { bitable, FieldType } from '@lark-base-open/js-sdk';
 import { ref, onMounted } from 'vue';
 import {
     ElButton,
@@ -25,17 +25,26 @@ export default {
             const tableId = formData.value.table;
             if (tableId) {
                 const table = await bitable.base.getTableById(tableId);
+
                 const textField = await table.getField('文本'); // 选择某个多行文本字段
                 const dateField = await table.getField('日期');
                 const radioField = await table.getField('单选');
 
-                alert('field', field)
+                // 处理单选字段
+                const radioOptions = await radioField.getOptions();
+                const randomRadioOption = radioOptions.length > 0
+                    ? radioOptions[Math.floor(Math.random() * radioOptions.length)].id
+                    : null;
+
+                // 处理日期格式（改为 YYYY-MM-DD）
+                const date = new Date();
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
                 table.addRecord({
                     fields: {
                         [textField.id]: `随机文本 ${Math.random().toFixed(2)}`, // 生成随机文本
-                        [radioField.id]: Math.floor(Math.random() * 10) + 1, // 1-10 的随机数
-                        [dateField.id]: new Date().toISOString(), // 当前时间
+                        [radioField.id]: { id: randomRadioOption },
+                        [dateField.id]: formattedDate, // 当前时间
                     }
                 });
             }
@@ -45,6 +54,10 @@ export default {
             const [tableList, selection] = await Promise.all([bitable.base.getTableMetaList(), bitable.base.getSelection()]);
             formData.value.table = selection.tableId;
             tableMetaList.value = tableList;
+
+            const table = await bitable.base.getActiveTable();
+            const attachmentFieldList = await table.getFieldListByType(FieldType.Attachment);
+            console.log('attachmentFieldList', attachmentFieldList);
         });
 
         return {
