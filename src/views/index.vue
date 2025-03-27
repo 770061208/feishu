@@ -25,12 +25,17 @@ export default {
             const tableId = formData.value.table;
             if (tableId) {
                 const table = await bitable.base.getTableById(tableId);
+                const textField = await table.getField('文本'); // 选择某个多行文本字段
+                const dateField = await table.getField('日期');
+                const radioField = await table.getField('单选');
+
+                alert('field', field)
+
                 table.addRecord({
                     fields: {
-                        '文本': Number((Math.random() * 10000).toFixed(2)), // 随机生成 0-10000 的金额，保留两位小数
-                        '单选': Math.floor(Math.random() * 10) + 1, // 随机生成 1-10 的频度
-                        '日期': new Date().toISOString(), // 当前日期，ISO 格式
-                        '附件': '' // 附件字段留空（如果需要上传文件，可以后续扩展）
+                        [textField.id]: `随机文本 ${Math.random().toFixed(2)}`, // 生成随机文本
+                        [radioField.id]: Math.floor(Math.random() * 10) + 1, // 1-10 的随机数
+                        [dateField.id]: new Date().toISOString(), // 当前时间
                     }
                 });
             }
